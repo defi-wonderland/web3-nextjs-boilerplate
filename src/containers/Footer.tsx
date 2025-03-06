@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-import { useCustomTheme } from '~/hooks/useTheme';
 import { FOOTER_HEIGHT } from '~/utils';
 
 export const Footer = () => {
@@ -14,16 +13,15 @@ export const Footer = () => {
   );
 };
 
-const FooterContainer = styled('footer')(() => {
-  const { currentTheme } = useCustomTheme();
+const FooterContainer = styled('footer')(({ theme }) => {
   return {
     display: 'flex',
     height: `${FOOTER_HEIGHT}rem`,
     padding: '0 8rem',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: currentTheme.backgroundSecondary,
-    borderTop: currentTheme.border,
+    backgroundColor: theme.palette.background.secondary,
+    borderTop: theme.palette.border,
     width: '100%',
   };
 });
