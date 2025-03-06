@@ -1,6 +1,5 @@
 import { CustomMuiTheme } from '~/types';
 
-// 🎨 You can customize the palette here to change the default colors
 // const palette = {
 //    error: {
 //      main: '#BA6B5D',
