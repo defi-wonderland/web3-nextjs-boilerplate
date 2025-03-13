@@ -1,19 +1,35 @@
 import { createTheme } from '@mui/material';
-import { Theme, ThemeName } from '~/types';
+import { CustomMuiTheme } from '~/types';
 
-export const getMuiThemeConfig = (currentTheme: Theme, themeName: ThemeName) => {
+export const getMuiThemeConfig = (customTheme: CustomMuiTheme) => {
   return createTheme({
-    palette: {
-      mode: themeName,
+    palette: customTheme.light,
+    typography: customTheme.typography,
+    colorSchemes: {
+      light: {
+        palette: {
+          ...customTheme.light,
+        },
+      },
+      dark: {
+        palette: {
+          ...customTheme.dark,
+        },
+      },
+    },
+    borderRadius: customTheme.borderRadius,
+    cssVariables: {
+      colorSchemeSelector: 'class',
     },
     components: {
       MuiCssBaseline: {
-        styleOverrides: {
+        styleOverrides: (theme) => ({
           body: {
-            background: currentTheme.backgroundPrimary,
-            color: currentTheme.textPrimary,
+            background: theme.palette.background.default,
+            color: theme.palette.text.primary,
           },
-        },
+          borderRadius: customTheme.borderRadius.sm,
+        }),
       },
     },
   });

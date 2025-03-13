@@ -1,31 +1,51 @@
-import { Theme as MuiTheme } from '@mui/material';
+import { PaletteOptions, Theme, ThemeOptions } from '@mui/material';
 import { Theme as RainbowTheme } from '@rainbow-me/rainbowkit';
 
-export type ThemeName = 'light' | 'dark';
+declare module '@mui/material/styles' {
+  interface TypeBackground {
+    default: string;
+    secondary: string;
+  }
 
-export interface Theme {
-  type: ThemeName;
-  textPrimary: string;
-  textSecondary: string;
-  backgroundPrimary: string;
-  backgroundSecondary: string;
-  titleColor: string;
-  titleFontFamily: string;
-  textFontFamily: string;
-  borderRadius: string;
-  secondaryBorderRadius: string;
-  border: string;
+  interface Palette {
+    title: {
+      primary: string;
+    };
+    border: string;
+  }
+
+  interface ThemeOptions {
+    borderRadius?: BorderRadius;
+  }
+
+  interface Theme {
+    borderRadius: BorderRadius;
+  }
 }
 
-export interface PropTheme {
-  theme: Theme;
+interface BorderRadius {
+  default: string;
+  sm: string;
+  md: string;
+  lg: string;
+}
+
+type CustomMuiThemeColors = Partial<PaletteOptions>;
+
+export interface CustomMuiTheme extends Partial<ThemeOptions> {
+  dark: CustomMuiThemeColors;
+  light: CustomMuiThemeColors;
+  borderRadius: {
+    default: string;
+    sm: string;
+    md: string;
+    lg: string;
+  };
 }
 
 export interface CustomThemes {
-  main: {
-    light: Theme;
-    dark: Theme;
-  };
-  getMui: (currentTheme: Theme, themeName: ThemeName) => MuiTheme;
+  getMui: Theme;
   rainbow: RainbowTheme;
 }
+
+export type ThemeMode = 'light' | 'dark' | 'system' | undefined;
