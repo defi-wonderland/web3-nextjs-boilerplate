@@ -1,0 +1,69 @@
+name: PR Branch Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Check if staging branch exists
+        id: check-staging
+        run: |
+          if git ls-remote --heads origin staging | grep staging; then
+            echo "staging branch exists"
+            echo "staging_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "staging branch does not exist"
+            echo "staging_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Validate branch merge rules
+        run: |
+          echo "SOURCE BRANCH: ${{ github.head_ref }}"
+          echo "TARGET BRANCH: ${{ github.base_ref }}"
+
+          SOURCE="${{ github.head_ref }}"
+          TARGET="${{ github.base_ref }}"
+          STAGING_EXISTS="${{ steps.check-staging.outputs.staging_exists }}"
+
+          # Sentinel for missing staging
+          if [[ "$STAGING_EXISTS" == "false" && ("$TARGET" == "main" || "$SOURCE" == "main") ]]; then
+            echo "❌ staging branch does not exist. Cannot merge to/from main without staging."
+            exit 1
+          fi
+
+          # Block dev <-> main
+          if [[ "$SOURCE" == "dev" && "$TARGET" == "main" ]] || [[ "$SOURCE" == "main" && "$TARGET" == "dev" ]]; then
+            echo "❌ Direct merges between dev and main are not allowed."
+            exit 1
+          fi
+
+          # staging -> main/dev only
+          if [[ "$SOURCE" == "staging" && "$TARGET" != "main" && "$TARGET" != "dev" ]]; then
+            echo "❌ staging can only be merged into main or dev."
+            exit 1
+          fi
+
+          # Only dev/main/fix into staging
+          if [[ "$TARGET" == "staging" && "$SOURCE" != "dev" && "$SOURCE" != "main" && "$SOURCE" != *fix* ]]; then
+            echo "❌ Only dev/main/fix branches can be merged into staging."
+            exit 1
+          fi
+
+          # Only staging/fix into main
+          if [[ "$TARGET" == "main" && "$SOURCE" != "staging" && "$SOURCE" != *fix* ]]; then
+            echo "❌ Only staging/fix branches can be merged into main."
+            exit 1
+          fi
+
+          # Warning for fix to main/staging
+          if [[ "$SOURCE" == *fix* && ( "$TARGET" == "main" || "$TARGET" == "staging" ) ]]; then
+            echo "::warning file=pr-branch-validation.yml::⚠️ Warning: You're merging a fix directly to $TARGET. Consider merging through staging if appropriate."
+          fi
+
+          echo "✅ PR passed validation."
