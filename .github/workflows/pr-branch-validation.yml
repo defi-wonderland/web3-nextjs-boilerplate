@@ -35,10 +35,10 @@ jobs:
             exit 0
           fi
 
-          # Block dev <-> main
-          if [[ "$SOURCE" == "dev" && "$TARGET" == "main" ]] || [[ "$SOURCE" == "main" && "$TARGET" == "dev" ]]; then
-            echo "❌ Direct merges between dev and main are not allowed."
-            exit 1
+          # Warning for main -> dev when staging doesn't exist
+          if [[ "$SOURCE" == "main" && "$TARGET" == "dev" && "$STAGING_EXISTS" == "false" ]]; then
+            echo "::warning file=pr-branch-validation.yml::⚠️ Warning: You're merging main into dev."
+            exit 0
           fi
 
           # Allow only staging <-> main or dev
