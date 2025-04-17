@@ -1,0 +1,18 @@
+---
+description: Best practices for Next.js applications and routing
+globs: **/*.{ts,tsx}
+---
+- Use the App Router for better performance and improved data fetching
+- Implement proper error boundaries to handle runtime errors gracefully
+- Utilize Next.js built-in optimizations like code splitting and image optimization
+- Use `getStaticProps` and `getServerSideProps` appropriately for data fetching
+- Minimize 'use client' directives, favoring React Server Components when possible
+- Implement proper loading and error handling with Suspense boundaries
+- Optimize images with Next.js Image component, using WebP format and appropriate sizing
+- Implement proper SEO with metadata and structured data
+- Use server actions for data mutations when appropriate
+- Implement proper caching strategies for API and data fetching
+- Organize code with the directory structure recommended by Next.js
+- Use appropriate data fetching methods based on requirements (Server Components, SWR, React Query)
+- Implement appropriate authentication strategies
+- Optimize for Core Web Vitals and performance metrics

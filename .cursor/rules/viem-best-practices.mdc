@@ -1,0 +1,17 @@
+---
+description: Best practices for using Viem for Ethereum account management
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use Viem's `createWalletClient` for managing Ethereum accounts
+- Implement proper error handling and user feedback for account-related operations
+- Utilize Viem's `signMessage` and `signTypedData` functions for secure signing
+- Ensure proper key management and security practices when handling private keys
+- Use Viem v2 APIs for managing Ethereum interactions
+- Implement proper error handling and user feedback for blockchain operations
+- Utilize functional programming patterns when working with Viem
+- Ensure proper type safety with TypeScript when using Viem functions
+- Follow Viem v2 documentation for up-to-date usage patterns
+- Implement robust error handling for transaction failures
+- Use the latest Viem hooks and utilities for optimal performance
+- Integrate properly with Wagmi v2 for a cohesive development experience
+- Ensure secure key management and proper wallet connections 

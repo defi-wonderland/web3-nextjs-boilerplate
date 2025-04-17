@@ -1,0 +1,17 @@
+---
+description: Best practices for using Wagmi for Ethereum interactions
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use Wagmi's hooks like `useAccount`, `useNetwork`, and `useSigner` for Ethereum state management
+- Implement proper error handling and user feedback for Ethereum transactions
+- Utilize Wagmi's `useContract` hook for interacting with smart contracts
+- Ensure proper gas estimation and transaction confirmation handling
+- Use Wagmi v2 hooks for consistent and reliable Ethereum interactions
+- Implement proper error handling and loading states for all Wagmi hooks
+- Utilize Wagmi's provider for optimal React context integration
+- Ensure proper configuration with the latest Wagmi v2 API
+- Implement TypeScript types for all Wagmi hook returns and parameters
+- Follow functional component patterns when implementing Wagmi hooks
+- Use Wagmi's authentication features for secure user sessions
+- Integrate properly with Viem v2 for lower-level operations
+- Use the latest Wagmi connectors for wallet connections 

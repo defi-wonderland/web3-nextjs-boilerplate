@@ -1,0 +1,246 @@
+---
+description: Best practices for using Material-UI components and theming
+globs: ["**/*.{ts,tsx,js,jsx}"] # Adjust glob if needed
+---
+- Use Material-UI's theme system for consistent styling across the application
+- Customize components using the `styled` function for fine-grained control
+- Implement responsive design using Material-UI's breakpoints
+- Utilize Material-UI's accessibility features and follow ARIA guidelines
+
+# Material-UI Best Practices
+
+## Theming and Styling
+
+-   **Use Material-UI's theme system for consistent styling across the application**
+    ```tsx
+    import React from 'react';
+    import { createTheme, ThemeProvider, Button, Box } from '@mui/material';
+    import { purple, green } from '@mui/material/colors';
+
+    // Bad: Inconsistent styling using inline styles or separate CSS files
+    // without leveraging the theme.
+    function BadComponent() {
+      return (
+        <div>
+          <button style={{ backgroundColor: '#673ab7', color: 'white', padding: '8px 16px' }}>
+            Primary Action
+          </button>
+          <div style={{ marginTop: '16px', padding: '10px', border: '1px solid #ccc' }}>
+            Some content
+          </div>
+        </div>
+      );
+    }
+
+    // Good: Define a theme and use ThemeProvider
+    const theme = createTheme({
+      palette: {
+        primary: {
+          main: purple[500],
+        },
+        secondary: {
+          main: green[500],
+        },
+      },
+      spacing: 8, // Base spacing unit (default is 8)
+      typography: {
+        button: {
+          textTransform: 'none', // Example customization
+        },
+      },
+    });
+
+    function GoodComponent() {
+      return (
+        <ThemeProvider theme={theme}>
+          {/* Components automatically inherit theme styles */}
+          <Button variant="contained" color="primary">
+            Primary Action
+          </Button>
+          <Box
+            sx={{
+              mt: theme.spacing(2), // Use theme spacing
+              p: 2, // Use theme spacing (2 * 8px = 16px)
+              border: `1px solid ${theme.palette.divider}`, // Use theme palette
+            }}
+          >
+            Some content using theme values
+          </Box>
+        </ThemeProvider>
+      );
+    }
+    ```
+
+-   **Customize components using the `styled` function for fine-grained control**
+    ```tsx
+    import React from 'react';
+    import { Button, Box, styled, Typography } from '@mui/material';
+
+    // Bad: Overriding styles with complex global CSS selectors or !important
+    /*
+    .MuiButton-root.my-custom-button-class {
+        margin-top: 20px !important;
+        background-color: blue !important;
+    }
+    */
+
+    // Bad: Using the `sx` prop for one-off customizations
+    function SxCustomization() {
+      return (
+        <Button
+          variant="contained"
+          sx={{
+            mt: 2, // Margin top using theme spacing (2 * 8px = 16px)
+            backgroundColor: 'secondary.main', // Access theme palette
+            '&:hover': { // Pseudo-classes
+              backgroundColor: 'secondary.dark',
+            },
+            // Responsive styles (see next point)
+            fontSize: { xs: '0.8rem', sm: '1rem' },
+          }}
+        >
+          Custom Button (sx)
+        </Button>
+      );
+    }
+
+    // Good: Using the `styled` utility for reusable styled components
+    const StyledCard = styled(Box)(({ theme }) => ({
+      padding: theme.spacing(3),
+      marginTop: theme.spacing(2),
+      backgroundColor: theme.palette.background.paper,
+      borderRadius: theme.shape.borderRadius,
+      boxShadow: theme.shadows[3],
+      border: `2px solid ${theme.palette.primary.main}`,
+    }));
+
+    function StyledComponentExample() {
+      return (
+        <StyledCard>
+          <Typography variant="h6">Reusable Styled Card</Typography>
+          <Typography>This card uses the `styled` utility.</Typography>
+        </StyledCard>
+      );
+    }
+    ```
+
+## Responsive Design
+
+-   **Implement responsive design using Material-UI's breakpoints**
+    ```tsx
+    import React from 'react';
+    import { Box, Typography, Grid, styled } from '@mui/material';
+
+    // Bad: Manual media queries ignoring theme breakpoints
+    /*
+    @media (min-width: 600px) {
+        .my-component { font-size: 18px; }
+    }
+    @media (min-width: 900px) {
+        .my-component { font-size: 20px; }
+    }
+    */
+
+    // Bad: Using theme breakpoints within the `sx` prop
+    function ResponsiveSx() {
+      return (
+        <Box
+          sx={{
+            width: { xs: '100%', md: '50%', lg: '33%' }, // Width changes at md and lg breakpoints
+            p: { xs: 1, sm: 2, md: 3 }, // Padding changes at xs, sm, and md breakpoints
+            backgroundColor: { xs: 'primary.light', md: 'primary.main' }, // Background changes at md
+            textAlign: { xs: 'center', sm: 'left' }, // Text alignment changes at sm
+          }}
+        >
+          <Typography sx={{ fontSize: { xs: '1rem', md: '1.2rem' } }}>
+            Responsive Box (sx)
+          </Typography>
+        </Box>
+      );
+    }
+
+    // Good: Using theme breakpoints with the `styled` utility
+    const ResponsiveStyledGrid = styled(Grid)(({ theme }) => ({
+      padding: theme.spacing(1), // Default padding
+      [theme.breakpoints.up('sm')]: { // Styles from 'sm' breakpoint upwards
+        padding: theme.spacing(2),
+      },
+      [theme.breakpoints.up('md')]: { // Styles from 'md' breakpoint upwards
+        padding: theme.spacing(3),
+        backgroundColor: theme.palette.grey[200],
+      },
+    }));
+
+    function ResponsiveStyled() {
+      return (
+        <ResponsiveStyledGrid container spacing={2}>
+          <Grid item xs={12} md={6}>
+            <Typography>Column 1</Typography>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Typography>Column 2</Typography>
+          </Grid>
+        </ResponsiveStyledGrid>
+      );
+    }
+    ```
+
+## Accessibility (a11y)
+
+-   **Utilize Material-UI's accessibility features and follow ARIA guidelines**
+    ```tsx
+    import React from 'react';
+    import { Button, IconButton, TextField, Tooltip } from '@mui/material';
+    import DeleteIcon from '@mui/icons-material/Delete';
+
+    // Bad: Using non-semantic elements for interactive controls without ARIA roles/props
+    function BadAccessibility() {
+      return (
+        <div>
+          {/* Clickable div instead of button */}
+          <div onClick={() => console.log('Clicked!')} style={{ cursor: 'pointer', padding: '8px' }}>
+            Click Me
+          </div>
+
+          {/* Icon without accessible name */}
+          <span onClick={() => console.log('Deleted!')} style={{ cursor: 'pointer' }}>
+             <DeleteIcon />
+          </span>
+
+          {/* Input without a label */}
+          <input type="text" placeholder="Enter name" />
+        </div>
+      );
+    }
+
+    // Good: Using appropriate MUI components and ARIA attributes
+    function GoodAccessibility() {
+      return (
+        <div>
+          {/* Use Button for clear semantics and keyboard accessibility */}
+          <Button variant="contained" onClick={() => console.log('Clicked!')}>
+            Click Me
+          </Button>
+
+          {/* Use IconButton with Tooltip or aria-label for accessible name */}
+          <Tooltip title="Delete item">
+            <IconButton
+              aria-label="Delete item" // Provides accessible name
+              onClick={() => console.log('Deleted!')}
+              color="error"
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+
+          {/* Use TextField which handles label association */}
+          <TextField
+            id="name-input" // Ensure id is unique
+            label="Full Name" // Provides visible and accessible label
+            variant="outlined"
+            margin="normal"
+          />
+        </div>
+      );
+    }
+    ``` 

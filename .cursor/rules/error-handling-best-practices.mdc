@@ -1,0 +1,232 @@
+---
+description: Best practices for handling errors and edge cases in TypeScript/JavaScript functions.
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Handle errors and edge cases at the beginning of functions using early returns.
+- Use guard clauses for preconditions and invalid states.
+- Avoid nested `if` statements and unnecessary `else` blocks by using the if-return pattern.
+- Place the "happy path" logic last in the function.
+- Implement proper error logging.
+- Throw user-friendly errors from service layers, potentially using custom error types.
+
+# Error Handling Best Practices
+
+-   **Handle errors and edge cases at the beginning of functions with early returns**
+    ```typescript
+    // Bad: Nested checks and happy path mixed with error handling
+    function processData(data: any, user?: User) {
+      let result = null;
+      if (data) {
+        if (user && user.isActive) {
+          // Happy path logic deep inside
+          console.log('Processing data for active user:', user.id);
+          result = { processed: data.value * 2 };
+          // More logic...
+        } else {
+          console.error('User is inactive or not provided');
+          // Error handling nested
+        }
+      } else {
+        console.error('No data provided');
+        // Error handling nested
+      }
+      return result;
+    }
+
+    // Good: Early returns for errors and edge cases
+    function processData(data: any, user?: User) {
+      // Guard clauses / Early returns
+      if (!data) {
+        console.error('No data provided');
+        return null; // Or throw new Error('No data provided');
+      }
+      if (!user || !user.isActive) {
+        console.error('User is inactive or not provided');
+        return null; // Or throw new Error('User is invalid or inactive');
+      }
+
+      // Happy path logic is clean and follows checks
+      console.log('Processing data for active user:', user.id);
+      const result = { processed: data.value * 2 };
+      // More logic...
+      return result;
+    }
+
+    interface User { id: string; isActive: boolean; }
+    ```
+
+-   **Use guard clauses and avoid unnecessary `else` statements**
+    ```typescript
+    // Bad: Using else after return/throw
+    function getUserStatus(userId?: string) {
+      if (!userId) {
+        return 'No user ID provided';
+      } else { // Unnecessary else
+        const user = findUserById(userId);
+        if (!user) {
+          return 'User not found';
+        } else { // Unnecessary else
+          if (!user.isActive) {
+            return 'User is inactive';
+          } else { // Unnecessary else
+            return 'User is active';
+          }
+        }
+      }
+    }
+
+    // Good: Using if-return pattern (guard clauses)
+    function getUserStatus(userId?: string) {
+      if (!userId) {
+        return 'No user ID provided'; // Early return
+      }
+
+      const user = findUserById(userId);
+      if (!user) {
+        return 'User not found'; // Early return
+      }
+
+      if (!user.isActive) {
+        return 'User is inactive'; // Early return
+      }
+
+      // Happy path last
+      return 'User is active';
+    }
+
+    // Dummy function for example
+    function findUserById(id: string): { isActive: boolean } | null {
+      return id === '123' ? { isActive: true } : null;
+    }
+    ```
+
+-   **Implement proper error logging**
+    ```typescript
+    import { logger } from './logger'; // Assume a logger utility exists
+
+    // Bad: Only returning null or a simple message, no logs
+    function processPayment(amount: number, accountId?: string) {
+      if (!accountId) {
+        return { success: false, message: 'Account ID missing' };
+      }
+      if (amount <= 0) {
+        return { success: false, message: 'Invalid amount' };
+      }
+      try {
+        // paymentService.charge(amount, accountId);
+        return { success: true };
+      } catch (error) {
+        // Error is caught but not logged anywhere, hard to debug
+        return { success: false, message: 'Payment failed' };
+      }
+    }
+
+    // Good: Logging errors with context
+    function processPayment(amount: number, accountId?: string) {
+      const context = { amount, accountId, function: 'processPayment' };
+
+      if (!accountId) {
+        logger.warn('Account ID missing', context);
+        return { success: false, message: 'Account ID missing' };
+      }
+      if (amount <= 0) {
+        logger.warn('Invalid payment amount', context);
+        return { success: false, message: 'Invalid amount' };
+      }
+
+      try {
+        // paymentService.charge(amount, accountId);
+        logger.info('Payment successful', context);
+        return { success: true };
+      } catch (error) {
+        // Log the actual error object for details
+        logger.error('Payment processing failed', { ...context, error });
+        return { success: false, message: 'Payment failed. Please try again later.' }; // User-friendly message
+      }
+    }
+    ```
+
+-   **Throw user-friendly errors from services (e.g., for tanStack Query)**
+    ```typescript
+    // Assume this is in services/user-service.ts
+
+    // Custom Error class for better type checking and consistent structure
+    class ApiError extends Error {
+      constructor(message: string, public statusCode: number, public details?: any) {
+        super(message); // User-friendly message
+        this.name = 'ApiError';
+        this.statusCode = statusCode;
+        this.details = details;
+      }
+    }
+
+    // Bad: Throwing generic errors or returning error objects
+    async function fetchUserDataBad(userId: string) {
+      try {
+        const response = await fetch(`/api/users/${userId}`);
+        if (!response.ok) {
+          // Generic error, client needs to parse response manually
+          // throw new Error(`HTTP error! status: ${response.status}`);
+          // Or returning an error object which might not be caught correctly by query libs
+           return { error: true, status: response.status, message: 'Failed to fetch' };
+        }
+        return await response.json();
+      } catch (error) {
+         // Network errors etc. might not be user-friendly
+         throw error;
+      }
+    }
+
+
+    // Good: Throwing specific, user-friendly errors
+    async function fetchUserDataGood(userId: string) {
+      let response: Response;
+      try {
+        response = await fetch(`/api/users/${userId}`);
+      } catch (networkError) {
+         // Handle network errors specifically if needed
+         console.error("Network error fetching user:", networkError);
+         throw new ApiError("Network connection failed. Please check your connection.", 503); // Service Unavailable
+      }
+
+      if (!response.ok) {
+        let errorDetails = null;
+        try {
+          errorDetails = await response.json(); // Try to get details from API response body
+        } catch (_) { /* Ignore if response body is not JSON */ }
+
+        // Map status codes to user-friendly messages
+        switch (response.status) {
+          case 401:
+            throw new ApiError("You are not authorized to view this user.", 401, errorDetails);
+          case 404:
+            throw new ApiError("User not found.", 404, errorDetails);
+          case 500:
+             throw new ApiError("Server error fetching user data. Please try again later.", 500, errorDetails);
+          default:
+            throw new ApiError(`Failed to fetch user data (Status: ${response.status}).`, response.status, errorDetails);
+        }
+      }
+
+      try {
+         return await response.json();
+      } catch (jsonError) {
+         console.error("Error parsing user data JSON:", jsonError);
+         throw new ApiError("Received invalid data format from the server.", 500); // Internal Server Error (or similar)
+      }
+    }
+
+    // Usage with tanStack Query (React Query) - Error will be caught in `error` state
+    // function UserProfile({ userId }) {
+    //   const { data, error, isLoading } = useQuery({
+    //     queryKey: ['user', userId],
+    //     queryFn: () => fetchUserDataGood(userId),
+    //   });
+    //
+    //   if (isLoading) return <p>Loading...</p>;
+    //   // Error object here will be an instance of ApiError (or other thrown error)
+    //   if (error) return <p>Error: {error.message}</p>;
+    //
+    //   return <div>{JSON.stringify(data)}</div>;
+    // }
+    ```

@@ -1,0 +1,236 @@
+---
+description: TypeScript coding standards and type safety guidelines
+globs: **/*.{ts,tsx}
+---
+TypeScript Best Practices
+
+- Use strict null checks to prevent null pointer exceptions
+```typescript
+// Bad: Without strict null checks
+function getLength(text: string) {
+  return text.length; // Could throw if text is null or undefined
+}
+
+// Good: With strict null checks
+function getLength(text: string | null | undefined): number {
+  if (!text) return 0;
+  return text.length;
+}
+```
+
+- Prefer interfaces over types for defining object shapes
+```typescript
+// Preferred: Using interfaces for object shapes
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// Alternative: Using type for object shapes
+type User = {
+  id: string;
+  name: string;
+  email: string;
+};
+```
+
+- Use type guards and assertions for runtime type checking
+```typescript
+// Type guard example
+function isString(value: unknown): value is string {
+  return typeof value === 'string';
+}
+
+function processValue(value: unknown): string {
+  if (isString(value)) {
+    // TypeScript knows value is a string here
+    return value.toUpperCase();
+  }
+  return '';
+}
+
+// Type assertion example (use sparingly)
+function getLength(value: unknown): number {
+  if (typeof value === 'string') {
+    return value.length;
+  }
+  return (value as any[]).length; // Type assertion
+}
+```
+
+- Implement proper type inference to reduce unnecessary type annotations
+```typescript
+// Bad: Unnecessary type annotations
+const numbers: number[] = [1, 2, 3];
+const doubled: number[] = numbers.map((n: number): number => n * 2);
+
+// Good: Let TypeScript infer types
+const numbers = [1, 2, 3];
+const doubled = numbers.map(n => n * 2);
+```
+
+- Prefer types over interfaces for defining object shapes
+- Use the "function" keyword for pure functions and omit semicolons
+```typescript
+// Preferred: Using function keyword for pure functions
+function add(a: number, b: number) {
+  return a + b
+}
+
+// For methods or class functions
+const multiply = (a: number, b: number) => a * b
+```
+
+- Follow file structure: exported component, subcomponents, helpers, static content, types
+```typescript
+// Component file structure example
+import React from 'react'
+
+// Main exported component
+export function UserProfile({ user, isEditable }: UserProfileProps) {
+  return (
+    <div>
+      <UserHeader user={user} />
+      {isEditable && <UserEditForm user={user} />}
+    </div>
+  )
+}
+
+// Subcomponents
+function UserHeader({ user }: { user: User }) {
+  return <h1>{user.name}</h1>
+}
+
+function UserEditForm({ user }: { user: User }) {
+  // Component implementation
+  return <form>{/* form fields */}</form>
+}
+
+// Helper functions
+function formatUserName(user: User) {
+  return `${user.firstName} ${user.lastName}`
+}
+
+// Static content
+const DEFAULT_AVATAR = '/images/default-avatar.png'
+
+// Types
+interface User {
+  id: string
+  firstName: string
+  lastName: string
+  name: string
+  email: string
+}
+
+interface UserProfileProps {
+  user: User
+  isEditable: boolean
+}
+```
+
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading)
+```typescript
+// Bad: Unclear variable names
+const l = users.length
+const f = users.filter(u => u.a)
+
+// Good: Descriptive names with auxiliary verbs
+const isLoading = true
+const hasError = false
+const userCount = users.length
+const activeUsers = users.filter(user => user.isActive)
+```
+
+- Implement the Receive an Object, Return an Object (RORO) pattern
+```typescript
+// Bad: Multiple parameters
+function createUser(firstName: string, lastName: string, email: string, age: number) {
+  // Implementation
+}
+
+// Good: RORO pattern
+function createUser({ firstName, lastName, email, age }: CreateUserParams) {
+  // Implementation
+  return { id: generateId(), firstName, lastName, email, age }
+}
+
+interface CreateUserParams {
+  firstName: string
+  lastName: string
+  email: string
+  age: number
+}
+```
+
+- Avoid unnecessary curly braces in single-line conditional statements
+- Use multi-line syntax with brackets for all other conditional statements
+```typescript 
+// Single-line conditional without braces
+if (user.isAdmin) return true
+
+// Multi-line with brackets
+if (user.isAdmin && user.hasPermission('edit')) {
+  updateUserPermissions(user)
+  notifyAdminAction(user)
+  return true
+}
+```
+
+- Handle errors and edge cases at the beginning of functions with early returns
+```typescript
+function processUserData(user?: User) {
+  // Handle errors and edge cases first
+  if (!user) return null
+  if (!user.isActive) return { error: 'User is not active' }
+  if (user.isBanned) return { error: 'User is banned' }
+
+  // Main logic follows after all validations
+  const processedData = {
+    id: user.id,
+    displayName: `${user.firstName} ${user.lastName}`,
+    // More processing...
+  }
+  
+  return processedData
+}
+```
+
+- Avoid enums, use maps instead
+```typescript
+// Bad: Using enum
+enum UserRole {
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  VIEWER = 'viewer'
+}
+
+// Good: Using const map
+const UserRole = {
+  ADMIN: 'admin',
+  EDITOR: 'editor',
+  VIEWER: 'viewer'
+} as const
+
+type UserRole = typeof UserRole[keyof typeof UserRole]
+```
+- Use lowercase with dashes for directories (e.g., components/auth-wizard)
+```
+src/
+  components/
+    user-profile/
+      index.tsx
+      user-avatar.tsx
+    auth-wizard/
+      index.tsx
+      login-form.tsx
+      signup-form.tsx
+  hooks/
+    use-auth.ts
+    use-form-validation.ts
+  utils/
+    string-helpers.ts
+```
+
+- Ensure proper type inference to reduce unnecessary type annotations 

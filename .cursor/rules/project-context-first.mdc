@@ -1,0 +1,23 @@
+---
+description: Always read the project description first to understand context
+globs: **/*
+---
+- Before starting any task, read the project description at notes/project-description.md
+- Understand the project's purpose, core features, and technology stack
+- Consider the specific context for AI assistance mentioned in the project description
+- Ensure all code and suggestions align with the project's stated goals and scope
+- Reference specific project requirements when providing recommendations
+
+# Project Context First
+
+When working on this project, always begin by understanding the overall context from the project description. This ensures that all code, suggestions, and assistance are aligned with the project's goals.
+
+## When Providing Assistance
+
+- Reference specific requirements from the project description
+- Ensure suggestions align with the technology stack
+- Consider the project scope when recommending features
+- Follow the established best practices for Web3 development
+- Keep the end-user experience in mind for all UI/UX decisions
+
+By starting with the project context, all assistance will be more relevant and valuable to the specific needs of this Web3 DApp project.
