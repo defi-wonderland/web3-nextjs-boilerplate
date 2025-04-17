@@ -1,0 +1,8 @@
+---
+description: Best practices for integrating RainbowKit for wallet connections
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Configure RainbowKit with appropriate chains and wallet connectors
+- Implement proper error handling for wallet connection issues
+- Use RainbowKit's built-in UI components for a consistent user experience
+- Ensure proper security measures when handling user accounts and transactions

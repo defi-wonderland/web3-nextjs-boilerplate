@@ -1,0 +1,581 @@
+---
+description: Best practices for React component development and state management
+globs: **/*.{ts,tsx,js,jsx}
+---
+- Use functional components with hooks instead of class components
+- Implement proper prop type validation using PropTypes or TypeScript
+- Utilize the `useCallback` and `useMemo` hooks for performance optimization
+- Keep components small and focused on a single responsibility
+- Use TypeScript for component typing and avoid PropTypes
+- Keep components small and focused on a single responsibility
+- Use declarative JSX with strategic line breaks for readability
+- Avoid ternary operators in JSX, use logical AND (&&) for conditional rendering
+- Separate static content and types at the end of component files
+- Use custom CSS for components and avoid inline styles
+- Implement mobile-first approach for responsive design
+- Minimize 'use client', 'useEffect', and 'setState'
+- Wrap client components in Suspense with appropriate fallbacks
+- Use dynamic loading for non-critical components
+- Place static content variables outside render functions
+- Rely on React's component tree for state management
+# React Best Practices
+
+## Component Development
+
+-   **Use functional components with hooks instead of class components**
+    ```tsx
+    // Bad: Class component
+    import React, { Component } from 'react';
+
+    class Counter extends Component<{}, { count: number }> {
+      state = { count: 0 };
+
+      increment = () => {
+        this.setState({ count: this.state.count + 1 });
+      };
+
+      render() {
+        return (
+          <div>
+            <p>Count: {this.state.count}</p>
+            <button onClick={this.increment}>Increment</button>
+          </div>
+        );
+      }
+    }
+
+    // Good: Functional component with hooks
+    import React, { useState } from 'react';
+
+    function Counter() {
+      const [count, setCount] = useState(0);
+
+      const increment = () => {
+        setCount(prevCount => prevCount + 1);
+      };
+
+      return (
+        <div>
+          <p>Count: {count}</p>
+          <button onClick={increment}>Increment</button>
+        </div>
+      );
+    }
+    ```
+
+-   **Use TypeScript for component typing and avoid PropTypes**
+    ```tsx
+    import React from 'react';
+    // import PropTypes from 'prop-types'; // Avoid PropTypes
+
+    // Bad: Using PropTypes
+    // function Greeting({ name }) {
+    //   return <h1>Hello, {name}</h1>;
+    // }
+    // Greeting.propTypes = {
+    //   name: PropTypes.string.isRequired,
+    // };
+
+    // Good: Using TypeScript interfaces
+    interface GreetingProps {
+      name: string;
+      age?: number; // Optional prop
+    }
+
+    function Greeting({ name, age }: GreetingProps) {
+      return (
+        <h1>
+          Hello, {name}
+          {age && ` (Age: ${age})`}
+        </h1>
+      );
+    }
+    ```
+
+-   **Utilize the `useCallback` and `useMemo` hooks for performance optimization**
+    ```tsx
+    import React, { useState, useCallback, useMemo } from 'react';
+
+    // Example: useCallback for stable function reference
+    function ParentComponent() {
+      const [count, setCount] = useState(0);
+
+      // Without useCallback, handleClick changes on every render
+      // const handleClick = () => console.log('Button clicked');
+
+      // With useCallback, handleClick reference is stable unless dependencies change
+      const handleClick = useCallback(() => {
+        console.log('Button clicked, count:', count);
+        // If the callback depends on state/props, include them in the dependency array
+      }, [count]); // Dependency array ensures function updates when count changes
+
+      return <ChildComponent onClick={handleClick} />;
+    }
+
+    const ChildComponent = React.memo(({ onClick }: { onClick: () => void }) => {
+      console.log('ChildComponent rendered');
+      return <button onClick={onClick}>Click Me</button>;
+    });
+
+
+    // Example: useMemo for expensive calculations
+    function ExpensiveCalculationComponent({ data }: { data: number[] }) {
+      // Without useMemo, calculation runs on every render
+      // const processedData = data.map(item => item * 2).reduce((a, b) => a + b, 0);
+
+      // With useMemo, calculation only runs when 'data' changes
+      const processedData = useMemo(() => {
+        console.log('Performing expensive calculation...');
+        return data.map(item => item * 2).reduce((a, b) => a + b, 0);
+      }, [data]); // Dependency array
+
+      return <div>Processed Data Sum: {processedData}</div>;
+    }
+    ```
+
+-   **Keep components small and focused on a single responsibility**
+    ```tsx
+    // Bad: Large component handling multiple concerns
+    function UserDashboard({ userId }: { userId: string }) {
+      const [user, setUser] = useState(null);
+      const [posts, setPosts] = useState([]);
+      const [settings, setSettings] = useState({});
+      const [isLoading, setIsLoading] = useState(true);
+
+      // Fetching logic for user, posts, settings...
+      // Rendering logic for profile header, post list, settings form...
+
+      return (
+        <div>
+          {/* Complex rendering logic */}
+        </div>
+      );
+    }
+
+    // Good: Breaking down into smaller components
+    function UserDashboard({ userId }: { userId: string }) {
+      // Fetch user data here or in a custom hook
+      return (
+        <div>
+          <UserProfileHeader userId={userId} />
+          <UserPostList userId={userId} />
+          <UserSettings userId={userId} />
+        </div>
+      );
+    }
+
+    // Separate components for each concern
+    function UserProfileHeader({ userId }: { userId: string }) { /* ... */ }
+    function UserPostList({ userId }: { userId: string }) { /* ... */ }
+    function UserSettings({ userId }: { userId: string }) { /* ... */ }
+    ```
+
+-   **Use declarative JSX with strategic line breaks for readability**
+    ```tsx
+    // Bad: Hard to read JSX
+    function UserCard({ user }) {
+      return <div className="card"><img src={user.avatar} alt={user.name} /><div><h2>{user.name}</h2><p>{user.email}</p><button onClick={() => console.log('Edit')}>Edit</button></div></div>;
+    }
+
+    // Good: Readable JSX with line breaks
+    function UserCard({ user }: { user: { avatar: string; name: string; email: string } }) {
+      return (
+        <div className="card">
+          <img src={user.avatar} alt={user.name} />
+          <div>
+            <h2>{user.name}</h2>
+            <p>{user.email}</p>
+            <button onClick={() => console.log('Edit')}>
+              Edit
+            </button>
+          </div>
+        </div>
+      );
+    }
+    ```
+
+-   **Avoid ternary operators in JSX, use logical AND (&&) for conditional rendering**
+    ```tsx
+    // Bad: Ternary for conditional rendering
+    function UserStatus({ user }) {
+      return (
+        <div>
+          {user.isLoggedIn ? <p>Welcome back!</p> : null}
+        </div>
+      );
+    }
+
+    // Good: Logical AND (&&) for conditional rendering
+    function UserStatus({ user }: { user: { isLoggedIn: boolean } }) {
+      return (
+        <div>
+          {user.isLoggedIn && <p>Welcome back!</p>}
+        </div>
+      );
+    }
+
+    // Note: Ternaries are acceptable for choosing between two elements
+    function LoginButton({ isLoggedIn, onLogin, onLogout }) {
+        if(isLoggedIn) return <button onClick={onLogout}>Logout</button>;
+        if(!isLoggedIn) return <button onClick={onLogin}>Login</button>;
+    }
+    ```
+
+-   **Separate static content and types at the end of component files**
+    ```tsx
+    // See TypeScript best practices for file structure example
+    import React from 'react';
+
+    // Main exported component
+    export function ProductDisplay({ product }: ProductDisplayProps) {
+      return (
+        <div>
+          <h1>{product.name}</h1>
+          <p>{product.description || DEFAULT_DESCRIPTION}</p>
+          <ProductImage url={product.imageUrl} />
+        </div>
+      );
+    }
+
+    // Subcomponents
+    function ProductImage({ url }: { url: string }) {
+      return <img src={url || DEFAULT_IMAGE_URL} alt="Product" />;
+    }
+
+    // Helper functions (if any)
+    // function formatPrice(price: number) { ... }
+
+    // Static content
+    const DEFAULT_DESCRIPTION = 'No description available.';
+    const DEFAULT_IMAGE_URL = '/images/placeholder.png';
+
+    // Types
+    interface Product {
+      id: string;
+      name: string;
+      description?: string;
+      imageUrl: string;
+    }
+
+    interface ProductDisplayProps {
+      product: Product;
+    }
+    ```
+
+-   **Use custom CSS (e.g., CSS Modules, Tailwind) for components and avoid inline styles**
+    ```tsx
+    // Bad: Inline styles
+    function Alert({ message }) {
+      return (
+        <div style={{ padding: '10px', backgroundColor: 'red', color: 'white', borderRadius: '4px' }}>
+          {message}
+        </div>
+      );
+    }
+
+    // Good: Using CSS class (e.g., with CSS Modules or Tailwind)
+    // styles.module.css
+    // .alert {
+    //   padding: 10px;
+    //   background-color: red;
+    //   color: white;
+    //   border-radius: 4px;
+    // }
+
+    import styles from './styles.module.css'; // Example with CSS Modules
+
+    function Alert({ message }: { message: string }) {
+      return (
+        <div className={styles.alert}> {/* Or className="p-2 bg-red-600 text-white rounded" with Tailwind */}
+          {message}
+        </div>
+      );
+    }
+    ```
+
+-   **Implement mobile-first approach for responsive design**
+    ```css
+    /* Bad: Desktop-first (using max-width) */
+    .container {
+      width: 960px;
+      margin: 0 auto;
+    }
+
+    /* Styles for smaller screens override base styles */
+    @media (max-width: 768px) {
+      .container {
+        width: 100%;
+        padding: 0 15px;
+      }
+    }
+
+    /* Good: Mobile-first (using min-width) */
+    .container {
+      /* Base styles for mobile */
+      width: 100%;
+      padding: 0 15px;
+      margin: 0 auto;
+    }
+
+    /* Styles for larger screens enhance base styles */
+    @media (min-width: 768px) {
+      .container {
+        width: 720px;
+        padding: 0; /* Reset padding if needed */
+      }
+    }
+
+    @media (min-width: 992px) {
+      .container {
+        width: 960px;
+      }
+    }
+    ```
+
+-   **Minimize 'use client', 'useEffect', and 'setState'**
+    ```tsx
+    import React, { useState, useEffect } from 'react';
+
+    // Bad: Unnecessary useEffect for derived state
+    function UserInfo({ user }) {
+      const [displayName, setDisplayName] = useState('');
+
+      // useEffect runs after every render where 'user' changes
+      useEffect(() => {
+        if (user) {
+          setDisplayName(`${user.firstName} ${user.lastName}`);
+        } else {
+          setDisplayName('');
+        }
+      }, [user]); // Dependency on user object
+
+      return <div>{displayName}</div>;
+    }
+
+    // Good: Calculate derived state directly during render
+    function UserInfo({ user }: { user?: { firstName: string; lastName: string } }) {
+      // Calculate directly - simpler, less overhead
+      const displayName = user ? `${user.firstName} ${user.lastName}` : '';
+
+      return <div>{displayName}</div>;
+    }
+
+    // ---
+
+    // Bad: Fetching data in useEffect without proper cleanup or condition
+    // function DataFetcher({ id }) {
+    //   const [data, setData] = useState(null);
+    //   useEffect(() => {
+    //     // Missing check if id is valid, potential race conditions, no cleanup
+    //     fetch(`/api/data/${id}`)
+    //       .then(res => res.json())
+    //       .then(setData);
+    //   }, [id]);
+    //   // ...
+    // }
+
+    // Good: Prefer server components for data fetching (Next.js example)
+    // Or use dedicated data fetching hooks (like React Query, SWR)
+    // async function DataDisplay({ id }) {
+    //    // Fetch data directly in Server Component (Next.js App Router)
+    //    const data = await fetch(`/api/data/${id}`).then(res => res.json());
+    //    return <div>{JSON.stringify(data)}</div>;
+    // }
+
+    // Good (Client Component with hook): Use a library or custom hook
+    // function DataFetcher({ id }) {
+    //   const { data, error, isLoading } = useDataFetchingHook(`/api/data/${id}`); // Hook handles useEffect, cleanup, state
+    //   if (isLoading) return <p>Loading...</p>;
+    //   if (error) return <p>Error loading data.</p>;
+    //   return <div>{JSON.stringify(data)}</div>;
+    // }
+    ```
+
+-   **Wrap client components in Suspense with appropriate fallbacks**
+    ```tsx
+    import React, { Suspense, lazy } from 'react';
+
+    // Dynamically import a client component
+    const HeavyClientComponent = lazy(() => import('./HeavyClientComponent'));
+    // const AnotherClientComponent = lazy(() => import('./AnotherClientComponent'));
+
+    function LoadingFallback() {
+      return <p>Loading component...</p>;
+    }
+
+    function App() {
+      return (
+        <div>
+          <h1>My Application</h1>
+          <p>Some static content here.</p>
+
+          {/* Wrap the lazy-loaded component(s) in Suspense */}
+          <Suspense fallback={<LoadingFallback />}>
+            <HeavyClientComponent />
+            {/* <AnotherClientComponent /> */}
+          </Suspense>
+
+          <p>More static content.</p>
+        </div>
+      );
+    }
+
+    // ./HeavyClientComponent.tsx
+    // 'use client'; // If needed (e.g., uses hooks like useState, useEffect)
+    // import React from 'react';
+    // export default function HeavyClientComponent() {
+    //   // ... component logic
+    //   return <div>This is a heavy component!</div>;
+    // }
+    ```
+
+-   **Use dynamic loading for non-critical components**
+    ```tsx
+    // (See Suspense example above using React.lazy)
+
+    // Example using Next.js dynamic import
+    import dynamic from 'next/dynamic';
+    import React from 'react';
+
+    const NonCriticalModal = dynamic(() => import('../components/NonCriticalModal'), {
+      loading: () => <p>Loading modal...</p>, // Optional loading component
+      ssr: false // Disable server-side rendering if it's purely client-side
+    });
+
+    function Page() {
+      const [showModal, setShowModal] = useState(false);
+
+      return (
+        <div>
+          <button onClick={() => setShowModal(true)}>Show Optional Modal</button>
+          {showModal && <NonCriticalModal onClose={() => setShowModal(false)} />}
+        </div>
+      );
+    }
+
+    // ../components/NonCriticalModal.tsx
+    // export default function NonCriticalModal({ onClose }) {
+    //   return (
+    //     <div className="modal">
+    //       <h2>Optional Information</h2>
+    //       <button onClick={onClose}>Close</button>
+    //     </div>
+    //   );
+    // }
+    ```
+
+-   **Place static content variables outside render functions**
+    ```tsx
+    import React from 'react';
+
+    // Good: Static content defined outside the component
+    const WELCOME_MESSAGE = "Welcome to our platform!";
+    const HELP_LINK = "/help";
+
+    function Header() {
+      // Bad: Defining static content inside the render function
+      // const welcomeMessage = "Welcome to our platform!";
+      // const helpLink = "/help";
+
+      return (
+        <header>
+          <h1>{WELCOME_MESSAGE}</h1>
+          <a href={HELP_LINK}>Need help?</a>
+        </header>
+      );
+    }
+    ```
+
+-   **Rely on React's component tree for state management (prop drilling)**
+    ```tsx
+    // Example: Passing state down through props
+    function App() {
+      const [user, setUser] = useState({ name: 'Alice', preferences: { theme: 'dark' } });
+
+      const handleThemeChange = (newTheme: string) => {
+        setUser(currentUser => ({
+          ...currentUser,
+          preferences: { ...currentUser.preferences, theme: newTheme }
+        }));
+      };
+
+      return (
+        <div>
+          {/* Pass user data and theme change handler down */}
+          <UserProfile user={user} onThemeChange={handleThemeChange} />
+        </div>
+      );
+    }
+
+    function UserProfile({ user, onThemeChange }) {
+      return (
+        <div>
+          <h2>{user.name}'s Profile</h2>
+          {/* Pass relevant parts further down */}
+          <Preferences userPreferences={user.preferences} onThemeChange={onThemeChange} />
+        </div>
+      );
+    }
+
+    function Preferences({ userPreferences, onThemeChange }) {
+      return (
+        <div>
+          <p>Current Theme: {userPreferences.theme}</p>
+          <ThemeSelector currentTheme={userPreferences.theme} onChange={onThemeChange} />
+        </div>
+      );
+    }
+
+    function ThemeSelector({ currentTheme, onChange }) {
+      return (
+        <select value={currentTheme} onChange={(e) => onChange(e.target.value)}>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      );
+    }
+    // Note: For deeply nested state, consider Context API or state management libraries
+    // but avoid them prematurely if prop drilling is manageable.
+    ```
+
+-   **Prioritize Web Vitals (LCP, CLS, FID)**
+    ```tsx
+    // Example: Optimizing LCP with image attributes
+    import React from 'react';
+
+    function HeroSection() {
+      // Bad: Image without size attributes can cause layout shifts (CLS)
+      // and might not be prioritized for loading (LCP)
+      // return <img src="/hero-image.jpg" alt="Hero Banner" />;
+
+      // Good: Provide width/height and consider priority hints
+      return (
+        <img
+          src="/hero-image.jpg"
+          alt="Hero Banner"
+          width={1200} // Specify intrinsic width
+          height={600} // Specify intrinsic height
+          // style={{ width: '100%', height: 'auto' }} // Use CSS for responsive sizing
+          loading="eager" // Hint to load this LCP element early (use with caution)
+          fetchPriority="high" // Newer attribute to signal high priority
+        />
+      );
+    }
+
+    // Example: Avoiding CLS by reserving space for dynamic content
+    function AdBanner() {
+        const [adLoaded, setAdLoaded] = useState(false);
+        // Assume useAd Hook fetches ad data
+
+        // Bad: Content pops in, causing layout shift
+        // if (!adLoaded) return null;
+        // return <div className="ad-content">{/* Ad */}</div>
+
+        // Good: Reserve space with min-height (or similar)
+        return (
+            <div style={{ minHeight: '100px', border: '1px dashed #ccc' }}>
+                {adLoaded ? <div className="ad-content">{/* Ad */}</div> : <p>Loading ad...</p>}
+            </div>
+        );
+    }
+    ```
