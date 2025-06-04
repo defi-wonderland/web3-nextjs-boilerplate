@@ -17,6 +17,6 @@ export const zIndex = {
 };
 
 export const DISCLAIMER_HEIGHT = 2.5;
-export const HEADER_HEIGHT = 4; // Header height in rem units
-export const FOOTER_HEIGHT = 3; // Footer height in rem units
+export const HEADER_HEIGHT = 6; // Header height in rem units
+export const FOOTER_HEIGHT = 4; // Footer height in rem units
 export const SURROUND_HEIGHT = HEADER_HEIGHT + FOOTER_HEIGHT;
