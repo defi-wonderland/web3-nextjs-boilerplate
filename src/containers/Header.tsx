@@ -1,6 +1,6 @@
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import { IconButton } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import { styled, useColorScheme } from '@mui/material/styles';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { zIndex, HEADER_HEIGHT } from '~/utils';
@@ -14,7 +14,7 @@ export const Header = () => {
 
   return (
     <StyledHeader>
-      <Logo>Logo</Logo>
+      <Typography data-testid='boilerplate-title'>Next.js Boilerplate</Typography>
       <SIconButton onClick={changeTheme}>{mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}</SIconButton>
       <ConnectButton />
     </StyledHeader>
@@ -35,12 +35,6 @@ const StyledHeader = styled('header')(({ theme }) => {
       zIndex: zIndex.HEADER,
     },
   ];
-});
-
-const Logo = styled('h1')({
-  fontSize: '1.5rem',
-  fontWeight: 'bold',
-  cursor: 'pointer',
 });
 
 const SIconButton = styled(IconButton)({

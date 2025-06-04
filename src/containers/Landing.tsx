@@ -2,11 +2,7 @@ import { styled } from '@mui/material/styles';
 import { DISCLAIMER_HEIGHT, SURROUND_HEIGHT } from '~/utils';
 
 export const Landing = () => {
-  return (
-    <LandingContainer>
-      <h1 data-testid='boilerplate-title'>Web3 React Boilerplate</h1>
-    </LandingContainer>
-  );
+  return <LandingContainer>{/* Add your landing page content here */}</LandingContainer>;
 };
 
 const LandingContainer = styled('div')({
