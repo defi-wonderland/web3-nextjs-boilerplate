@@ -1,14 +1,17 @@
 import { AppProps } from 'next/app';
+import { AppCacheProvider } from '@mui/material-nextjs/v15-pagesRouter';
 import { Providers } from '~/providers';
 import Layout from './layout';
 
 const Home = ({ Component, pageProps }: AppProps) => {
   return (
-    <Providers>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
-    </Providers>
+    <AppCacheProvider>
+      <Providers>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </Providers>
+    </AppCacheProvider>
   );
 };
 
