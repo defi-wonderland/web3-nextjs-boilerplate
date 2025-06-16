@@ -1,6 +1,6 @@
+import dotenv from '@dotenvx/dotenvx';
 import { defineWalletSetup } from '@synthetixio/synpress';
 import { MetaMask } from '@synthetixio/synpress/playwright';
-import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environment variables explicitly

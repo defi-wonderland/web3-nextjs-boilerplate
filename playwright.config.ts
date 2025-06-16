@@ -1,5 +1,5 @@
+import dotenv from '@dotenvx/dotenvx';
 import { defineConfig, devices } from '@playwright/test';
-import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environment variables from .env file
