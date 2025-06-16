@@ -20,7 +20,7 @@
     "format": "pnpm run prettier:fix && yarn run lint:fix",
     "format:check": "pnpm run prettier && yarn run lint",
     "prepare": "husky && wonderland-crypto-husky-checks install",
-    "test:fork:latest": "RPC_URL=${NEXT_PUBLIC_RPC_URL:-https://ethereum-sepolia-rpc.publicnode.com/} && anvil --fork-url $RPC_URL --chain-id 11155111 --gas-limit 30000000 --gas-price 20000000000 --base-fee 1000000000 --auto-impersonate --no-storage-caching",
+    "test:fork:latest": "RPC_URL=${NEXT_PUBLIC_RPC_URL:-https://ethereum-sepolia-rpc.publicnode.com/} && anvil --fork-url $RPC_URL --chain-id 11155111 --no-storage-caching",
     "synpress:cache": "npx synpress",
     "playwright:install": "playwright install",
     "playwright:test": "playwright test --reporter=list",
