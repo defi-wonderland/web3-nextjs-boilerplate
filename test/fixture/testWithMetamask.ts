@@ -19,12 +19,12 @@ export const testWithMetaMask = testWithSynpress(metaMaskFixtures(basicSetup)).e
       });
 
       // Wait a moment for the network to be added
-      await metamaskPage.waitForTimeout(2000);
+      await metamaskPage.waitForTimeout(100);
 
       await metamask.switchNetwork('Sepolia');
 
       // Wait for network switch to complete
-      await metamaskPage.waitForTimeout(3000);
+      await metamaskPage.waitForTimeout(100);
     } catch (error) {
       console.log('Network setup error (may already exist):', error);
       // Try to switch to Sepolia in case it already exists
