@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@dotenvx/dotenvx':
-        specifier: 1.44.2
-        version: 1.44.2
       '@emotion/cache':
         specifier: 11.14.0
         version: 11.14.0
@@ -63,6 +60,9 @@ importers:
       '@defi-wonderland/crypto-husky-checks':
         specifier: 1.5.6
         version: 1.5.6
+      '@dotenvx/dotenvx':
+        specifier: 1.44.2
+        version: 1.44.2
       '@eslint/compat':
         specifier: 1.1.1
         version: 1.1.1
