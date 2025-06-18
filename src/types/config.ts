@@ -7,7 +7,7 @@ export interface Env {
 }
 
 export interface Constants {
-  //...
+  RPC_URL_TESTING: string;
 }
 
 export interface Config {

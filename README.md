@@ -44,6 +44,53 @@ This boilerplate leverages the latest technologies, including:
 - [Viem](https://viem.sh/)
 - [Rainbowkit](https://www.rainbowkit.com/)
 
+## Running Tests
+
+To run the tests for this project, you can use the following commands:
+
+- **Run all tests** (both unit and end-to-end):
+
+  ```bash
+  pnpm run test
+  ```
+
+- **Run unit tests** using Vitest:
+
+  ```bash
+  pnpm run test:unit
+  ```
+
+- **Run end-to-end tests** using Playwright:
+  ```bash
+  pnpm run test:e2e
+  ```
+
+### Test Setup
+
+Before running the end-to-end tests, you need to complete the following setup steps:
+
+1. **Configure environment variables**: Add the following testing variables to your `.env` file:
+
+   ```bash
+   SEED_PHRASE=your_test_wallet_seed_phrase
+   PASSWORD=your_test_wallet_password
+   NEXT_PUBLIC_RPC_URL=your_rpc_url
+   NEXT_PUBLIC_IS_PLAYWRIGHT='true'
+   ```
+
+2. **Generate test wallet**: Run Synpress to generate the wallet needed for testing:
+
+   ```bash
+   npx synpress
+   ```
+
+   This command will set up the necessary wallet configuration for your end-to-end tests.
+
+3. **Run the tests**: After completing the setup, you can run the end-to-end tests using:
+   ```bash
+   pnpm run test:e2e
+   ```
+
 ## Theme Customization
 
 ### Modifying Default Colors
