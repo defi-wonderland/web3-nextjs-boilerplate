@@ -1,4 +1,4 @@
-import { testWithMetaMask as test } from '../test/fixture/testWithMetamask';
+import { testWithMetaMask as test } from './fixture/testWithMetamask';
 
 const { expect } = test;
 

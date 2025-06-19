@@ -21,7 +21,7 @@
     "format:check": "pnpm run prettier && yarn run lint",
     "prepare": "husky && wonderland-crypto-husky-checks install",
     "test:fork:latest": "RPC_URL=${NEXT_PUBLIC_RPC_URL:-https://ethereum-sepolia-rpc.publicnode.com/} && anvil --fork-url $RPC_URL --chain-id 11155111 --no-storage-caching",
-    "synpress:cache": "npx synpress",
+    "synpress:cache": "npx synpress tests/wallet-setup",
     "playwright:install": "playwright install",
     "playwright:test": "playwright test --reporter=list",
     "playwright:test:headed": "playwright test --reporter=list --headed",
