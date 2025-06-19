@@ -6,7 +6,7 @@
     "module": "ESNext",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -21,11 +21,19 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
-    "types": ["cypress"],
+    "types": ["@playwright/test", "node"],
     "paths": {
       "~/*": ["src/*"]
     }
   },
-  "include": ["./src", "./dist/types/**/*.ts", "./next-env.d.ts", "./cypress/**/*.ts", "./jest.config.ts"],
+  "include": [
+    "./src",
+    "./dist/types/**/*.ts",
+    "./next-env.d.ts",
+    "./test/**/*.ts",
+    "./tests/**/*.ts",
+    "./playwright.config.ts",
+    "./jest.config.ts"
+  ],
   "exclude": ["./node_modules"]
 }
