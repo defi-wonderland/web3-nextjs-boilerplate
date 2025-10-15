@@ -64,11 +64,6 @@ jobs:
         # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
         run: xvfb-run pnpm synpress:cache
         continue-on-error: true
-      - name: Run Sepolia Fork
-        run: |
-          pnpm test:fork:latest &
-          sleep 5
-          echo "Anvil fork started in background"
       - name: Run E2E tests (headful)
         # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
         run: xvfb-run pnpm playwright:test:headed

@@ -10,7 +10,7 @@ export const Footer = () => {
       <Typography>Footer</Typography>
       <Subtitle>
         <p>Made with 💜 by</p>
-        <a href='https://defi.sucks'>
+        <a href='https://wonderland.xyz'>
           <Image src={wonderlandLogo} alt='Wonderland' height={12} />
         </a>
       </Subtitle>

@@ -33,6 +33,7 @@
     "./test/**/*.ts",
     "./tests/**/*.ts",
     "./playwright.config.ts",
+    ".next/types/**/*.ts",
     "./jest.config.ts"
   ],
   "exclude": ["./node_modules"]
