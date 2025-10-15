@@ -2,9 +2,9 @@ import { connectorsForWallets } from '@rainbow-me/rainbowkit';
 import { rainbowWallet, walletConnectWallet, injectedWallet } from '@rainbow-me/rainbowkit/wallets';
 import { createConfig, http, cookieStorage, createStorage } from 'wagmi';
 import { sepolia } from 'wagmi/chains';
-import { getConfig } from '~/config';
+import { getConfig as getAppConfig } from '~/config';
 
-const { PROJECT_ID } = getConfig().env;
+const { PROJECT_ID } = getAppConfig().env;
 
 const getWallets = () => {
   if (PROJECT_ID) {
@@ -14,28 +14,30 @@ const getWallets = () => {
   }
 };
 
-const connectors = connectorsForWallets(
-  [
+export function getConfig() {
+  const connectors = connectorsForWallets(
+    [
+      {
+        groupName: 'Recommended',
+        wallets: getWallets(),
+      },
+    ],
     {
-      groupName: 'Recommended',
-      wallets: getWallets(),
+      appName: 'Web3 React boilerplate',
+      projectId: PROJECT_ID,
     },
-  ],
-  {
-    appName: 'Web3 React boilerplate',
-    projectId: PROJECT_ID,
-  },
-);
+  );
 
-export const config = createConfig({
-  chains: [sepolia],
-  ssr: true,
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
-  transports: {
-    [sepolia.id]: http(),
-  },
-  batch: { multicall: true },
-  connectors,
-});
+  return createConfig({
+    chains: [sepolia],
+    ssr: true,
+    storage: createStorage({
+      storage: cookieStorage,
+    }),
+    transports: {
+      [sepolia.id]: http(),
+    },
+    batch: { multicall: true },
+    connectors,
+  });
+}
