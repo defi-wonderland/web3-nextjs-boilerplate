@@ -27,4 +27,12 @@ dist-ssr
 
 .eslintcache
 .env
+.env.keys
 tsconfig.tsbuildinfo
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.cache-synpress/

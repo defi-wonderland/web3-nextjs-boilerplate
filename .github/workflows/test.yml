@@ -5,28 +5,71 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-test:
-    name: Build and Test
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v3
         with:
           version: 9
-
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
       - name: Create env file
         run: |
           touch .env
           echo "NEXT_PUBLIC_RPC_URL=${{ secrets.NEXT_PUBLIC_RPC_URL }}" >> .env
           echo "NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID }}" >> .env
           echo "NEXT_PUBLIC_ALCHEMY_KEY=${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}" >> .env
+      - name: Run unit tests
+        run: pnpm test:unit
 
-      - name: run Cypress and Jest
-        uses: cypress-io/github-action@v6
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
         with:
-          build: pnpm build
-          start: pnpm start
-          wait-on: 'http://localhost:3000'
-          command: pnpm test
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+      - name: Install dependencies
+        run: pnpm install
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      - name: Create env file
+        run: |
+          touch .env
+          echo "NEXT_PUBLIC_RPC_URL=${{ secrets.NEXT_PUBLIC_RPC_URL }}" >> .env
+          echo "NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID }}" >> .env
+          echo "NEXT_PUBLIC_ALCHEMY_KEY=${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}" >> .env
+          echo "NEXT_PUBLIC_IS_PLAYWRIGHT='true'" >> .env
+          echo "SEED_PHRASE=${{ secrets.SEED_PHRASE }}" >> .env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
+      - name: Build application
+        run: pnpm build
+      - name: Build cache
+        # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
+        run: xvfb-run pnpm synpress:cache
+        continue-on-error: true
+      - name: Run E2E tests (headful)
+        # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
+        run: xvfb-run pnpm playwright:test:headed
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

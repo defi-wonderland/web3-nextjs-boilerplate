@@ -1,3 +1,5 @@
+'use client';
+
 import { ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
 import { getConfig } from '~/config';
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { styled } from '@mui/material/styles';
 import { DISCLAIMER_HEIGHT, SURROUND_HEIGHT } from '~/utils';
 
