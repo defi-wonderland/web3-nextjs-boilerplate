@@ -93,6 +93,14 @@ export default [
       'prettier/prettier': 'error', // This tells ESLint to show Prettier errors as ESLint errors
       '@typescript-eslint/no-empty-object-type': 'off',
       '@typescript-eslint/no-empty-interface': 'off',
+      '@typescript-eslint/no-unused-expressions': [
+        'error',
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+          allowTaggedTemplates: true,
+        },
+      ],
     },
     settings: {
       // Spread Prettier config to disable conflicting ESLint rules
