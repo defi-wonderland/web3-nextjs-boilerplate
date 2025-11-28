@@ -3,10 +3,11 @@ name: Deploy to Vercel
 on:
   push:
     branches:
-      # - main No need to deploy to main
+      # - main / No need for production
       - dev
   pull_request:
     branches:
+      - main
       - dev
 
 jobs:
@@ -16,7 +17,7 @@ jobs:
       contents: read
       pull-requests: write
     environment:
-      name: ${{ github.ref_name == 'main' && 'Production' || 'Preview' }}
+      name: ${{ github.event_name == 'pull_request' && 'Preview' || (github.ref_name == 'main' && 'Production' || 'Preview') }}
 
     steps:
       - name: Validate required secrets
@@ -46,6 +47,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           scope: ${{ secrets.VERCEL_ORG_ID}}
-          vercel-args: ${{ github.ref_name == 'main' && '--prod' || '' }}
+          vercel-args: ${{ github.event_name == 'pull_request' && '' || (github.ref_name == 'main' && '--prod' || '') }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./
