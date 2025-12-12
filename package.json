@@ -8,6 +8,17 @@
   "engines": {
     "node": ">=18.17.0"
   },
+  "pnpm": {
+    "overrides": {
+      "axios@>=1.0.0 <1.8.2": ">=1.8.2",
+      "ws@>=8.0.0 <8.17.1": ">=8.17.1",
+      "glob@>=10.2.0 <10.5.0": ">=10.5.0",
+      "esbuild@<=0.24.2": ">=0.25.0",
+      "js-yaml@<3.14.2": ">=3.14.2",
+      "brace-expansion@>=1.0.0 <=1.1.11": ">=1.1.12",
+      "brace-expansion@>=2.0.0 <=2.0.1": ">=2.0.2"
+    }
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -55,10 +66,10 @@
     "@defi-wonderland/crypto-husky-checks": "1.5.6",
     "@dotenvx/dotenvx": "1.44.2",
     "@eslint/compat": "1.1.1",
-    "@eslint/eslintrc": "3.3.1",
+    "@eslint/eslintrc": "3.3.3",
     "@eslint/js": "9.22.0",
     "@jest/globals": "30.2.0",
-    "@playwright/test": "1.53.0",
+    "@playwright/test": "1.57.0",
     "@synthetixio/synpress": "4.1.1",
     "@types/jest": "29.5.12",
     "@types/lodash.merge": "4.6.7",
