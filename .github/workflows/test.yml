@@ -56,17 +56,10 @@ jobs:
           echo "NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID }}" >> .env
           echo "NEXT_PUBLIC_ALCHEMY_KEY=${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}" >> .env
           echo "NEXT_PUBLIC_IS_PLAYWRIGHT='true'" >> .env
-          echo "SEED_PHRASE=${{ secrets.SEED_PHRASE }}" >> .env
-          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
       - name: Build application
         run: pnpm build
-      - name: Build cache
-        # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
-        run: xvfb-run pnpm synpress:cache
-        continue-on-error: true
-      - name: Run E2E tests (headful)
-        # xvfb-run is needed due to a known issue (https://docs.synpress.io/docs/known-issues#headless-mode-limitations-on-ci)
-        run: xvfb-run pnpm playwright:test:headed
+      - name: Run E2E tests
+        run: pnpm playwright:test
       - uses: actions/upload-artifact@v4
         if: always()
         with:
