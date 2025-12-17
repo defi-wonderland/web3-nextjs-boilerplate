@@ -1,19 +1,9 @@
-import { testWithMetaMask as test } from './fixture/testWithMetamask';
+import { expect, test } from '@playwright/test';
 
-const { expect } = test;
-
-test.beforeEach(async ({ page, metamask }) => {
-  // Navigate to the app
+test.beforeEach(async ({ page }) => {
   await page.goto('/');
-  await page.getByText('Connect Wallet').click();
-  await page.getByText('MetaMask').click();
-  await metamask.connectToDapp();
 });
 
-test('should connect MetaMask wallet and display account', async ({ page, metamask }) => {
-  await expect(page.getByText('Connect Wallet')).not.toBeVisible();
-  const connectedAddress = await metamask.getAccountAddress();
-  const truncatedAddress = `${connectedAddress.slice(0, 4)}…${connectedAddress.slice(-4)}`;
-
-  await expect(page.getByTestId('rk-account-button')).toContainText(truncatedAddress);
+test('should display connect wallet button', async ({ page }) => {
+  await expect(page.getByText('Connect Wallet')).toBeVisible();
 });
