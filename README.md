@@ -67,29 +67,18 @@ To run the tests for this project, you can use the following commands:
 
 ### Test Setup
 
-Before running the end-to-end tests, you need to complete the following setup steps:
+Before runnin the end-to-end tests, configure environment variables by adding the following to your `.env` file:
 
-1. **Configure environment variables**: Add the following testing variables to your `.env` file:
+```bash
+NEXT_PUBLIC_RPC_URL=your_rpc_url
+NEXT_PUBLIC_IS_PLAYWRIGHT='true'
+```
 
-   ```bash
-   SEED_PHRASE=your_test_wallet_seed_phrase
-   PASSWORD=your_test_wallet_password
-   NEXT_PUBLIC_RPC_URL=your_rpc_url
-   NEXT_PUBLIC_IS_PLAYWRIGHT='true'
-   ```
+After configuring the environment, run the tests using:
 
-2. **Generate test wallet**: Run Synpress to generate the wallet needed for testing:
-
-   ```bash
-   npx synpress
-   ```
-
-   This command will set up the necessary wallet configuration for your end-to-end tests.
-
-3. **Run the tests**: After completing the setup, you can run the end-to-end tests using:
-   ```bash
-   pnpm run test:e2e
-   ```
+```bash
+pnpm run test:e2e
+```
 
 ## Theme Customization
 
