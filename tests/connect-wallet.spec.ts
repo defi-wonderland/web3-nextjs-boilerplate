@@ -5,5 +5,5 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('should display connect wallet button', async ({ page }) => {
-  await expect(page.getByText('Connect Wallet')).toBeVisible();
+  await expect(page.getByTestId('rk-account-button')).toBeVisible();
 });

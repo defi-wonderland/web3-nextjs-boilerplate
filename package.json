@@ -65,6 +65,7 @@
     "@types/react-dom": "18.3.0",
     "@typescript-eslint/eslint-plugin": "8.50.0",
     "@typescript-eslint/parser": "8.50.0",
+    "@wonderland/walletless": "1.0.0",
     "eslint": "9.39.1",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.31.0",

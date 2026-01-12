@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Create env file
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: "pnpm"
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
@@ -56,8 +56,6 @@ jobs:
           echo "NEXT_PUBLIC_PROJECT_ID=${{ secrets.NEXT_PUBLIC_PROJECT_ID }}" >> .env
           echo "NEXT_PUBLIC_ALCHEMY_KEY=${{ secrets.NEXT_PUBLIC_ALCHEMY_KEY }}" >> .env
           echo "NEXT_PUBLIC_IS_PLAYWRIGHT='true'" >> .env
-      - name: Build application
-        run: pnpm build
       - name: Run E2E tests
         run: pnpm playwright:test
       - uses: actions/upload-artifact@v4
