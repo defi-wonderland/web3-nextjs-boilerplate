@@ -32,9 +32,9 @@ jobs:
       - name: Install Node
         uses: actions/setup-node@v4
         with:
-          node-version: '21.4'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
+          node-version: "21.4"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
 
       - name: Install project dependencies
         run: pnpm install --frozen-lockfile --prefer-frozen-lockfile
