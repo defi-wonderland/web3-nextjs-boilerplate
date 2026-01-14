@@ -57,7 +57,7 @@ export default defineConfig({
     },
   ],
 
-  /* Run your forked Sepolia & local dev server before starting the tests */
+  /* Run your forked Sepolia & build and start local dev server before starting the tests */
   webServer: [
     {
       command: 'pnpm test:fork:latest',
@@ -66,7 +66,7 @@ export default defineConfig({
       timeout: 120 * 1000,
     },
     {
-      command: 'pnpm dev',
+      command: 'pnpm build && pnpm start',
       url: 'http://localhost:3000',
       reuseExistingServer: !process.env.CI,
       timeout: 120 * 1000,
